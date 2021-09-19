@@ -2,11 +2,18 @@ package main
 
 import (
 	"fmt"
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"go-monitor/hardware"
+	"strconv"
 )
+
+var Title = "go-monitor"
+var WindowWidth float32 = 800
+var WindowHeight float32 = 600
+var WindowSizeFlag = true
 
 func main() {
 	memInfo := hardware.MemInfo()
@@ -15,16 +22,22 @@ func main() {
 	cpuInfo := hardware.CpuInfo()
 	fmt.Println(cpuInfo)
 
-	a := app.New()
-	w := a.NewWindow("Hello")
+	app := app.New()
+	window := app.NewWindow(Title)
 
-	hello := widget.NewLabel("Hello Fyne!")
-	w.SetContent(container.NewVBox(
-		hello,
-		widget.NewButton("Hi!", func() {
-			hello.SetText("Welcome :)")
-		}),
-	))
+	window.SetFixedSize(WindowSizeFlag)
+	window.Resize(fyne.Size{Width: WindowWidth, Height: WindowHeight})
 
-	w.ShowAndRun()
+	memLbl := widget.NewLabel("Mem info :")
+	totalMemLbl := widget.NewLabel(strconv.FormatUint(memInfo.Total, 10))
+	freeMemLbl := widget.NewLabel(strconv.FormatUint(memInfo.Free, 10))
+
+	vBox := container.NewVBox(
+		memLbl,
+		totalMemLbl,
+		freeMemLbl,
+	)
+
+	window.SetContent(vBox)
+	window.ShowAndRun()
 }
